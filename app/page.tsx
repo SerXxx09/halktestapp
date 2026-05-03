@@ -1,17 +1,19 @@
+import Link from 'next/link';
+
 async function getHealth() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
     const response = await fetch(`${baseUrl}/api/health`, {
-      cache: "no-store",
+      cache: 'no-store'
     });
 
     if (!response.ok) {
-      return { ok: false, message: "Health endpoint вернул ошибку" };
+      return { ok: false, message: 'Health endpoint вернул ошибку' };
     }
 
     return response.json();
   } catch {
-    return { ok: false, message: "Health endpoint пока недоступен на этапе сборки" };
+    return { ok: false, message: 'Health endpoint пока недоступен на этапе сборки' };
   }
 }
 
@@ -21,22 +23,26 @@ export default async function HomePage() {
   return (
     <main className="page">
       <section className="card">
-        <p className="eyebrow">ONREZA deployment test</p>
-        <h1>Halk Test App</h1>
+        <p className="eyebrow">HALK MVP</p>
+        <h1>Личный кабинет спортсменов</h1>
         <p className="lead">
-          Минимальное Next.js-приложение для проверки деплоя, домена и будущего подключения PostgreSQL.
+          Тестовая версия системы для регистрации спортсменов, внесения результатов, ссылок на видео и админской проверки.
         </p>
 
         <div className="statusBox">
-          <span className={health.ok ? "dot ok" : "dot warn"} />
+          <span className={health.ok ? 'dot ok' : 'dot warn'} />
           <div>
-            <strong>{health.ok ? "Приложение работает" : "Приложение собрано"}</strong>
-            <p>{health.message || "API endpoint /api/health доступен."}</p>
+            <strong>{health.ok ? 'Приложение работает' : 'Приложение собрано'}</strong>
+            <p>{health.message || 'API endpoint /api/health доступен.'}</p>
           </div>
         </div>
 
         <div className="grid">
-          <a href="/api/health">/api/health</a>
+          <Link href="/register">Регистрация</Link>
+          <Link href="/login">Вход</Link>
+          <Link href="/dashboard">Кабинет</Link>
+          <Link href="/admin">Админка</Link>
+          <a href="/api/setup-db">/api/setup-db</a>
           <a href="/api/db-check">/api/db-check</a>
         </div>
       </section>
