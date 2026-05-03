@@ -1,4 +1,4 @@
-import { Pool, type QueryResultRow } from 'pg';
+import { Pool } from 'pg';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -29,6 +29,6 @@ export function getPool() {
   return globalThis.halkPgPool;
 }
 
-export async function query<T extends QueryResultRow = QueryResultRow>(text: string, params: unknown[] = []) {
-  return getPool().query<T>(text, params);
+export async function query<T = any>(text: string, params: unknown[] = []) {
+  return getPool().query(text, params) as Promise<{ rows: T[]; rowCount: number | null }>;
 }
