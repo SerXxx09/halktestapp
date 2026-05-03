@@ -17,11 +17,19 @@ function getSafeUrlDiagnostics(value: string) {
 
   let host: string | null = null;
   let database: string | null = null;
+  let hasUsername = false;
+  let hasPassword = false;
+  let usernameLength = 0;
+  let passwordLength = 0;
 
   try {
     const parsed = new URL(normalized);
     host = parsed.hostname || null;
     database = parsed.pathname ? parsed.pathname.replace(/^\//, '') : null;
+    hasUsername = parsed.username.length > 0;
+    hasPassword = parsed.password.length > 0;
+    usernameLength = parsed.username.length;
+    passwordLength = parsed.password.length;
   } catch {
     // Do not expose the raw secret value in API output.
   }
@@ -32,7 +40,11 @@ function getSafeUrlDiagnostics(value: string) {
     normalizedLength: normalized.length,
     hasValidProtocol,
     host,
-    database
+    database,
+    hasUsername,
+    hasPassword,
+    usernameLength,
+    passwordLength
   };
 }
 
@@ -55,6 +67,18 @@ export async function GET() {
       {
         ok: false,
         message: 'DATABASE_URL задан, но не похож на PostgreSQL connection string. Значение должно начинаться с postgresql:// или postgres://.',
+        hasDatabaseUrl: true,
+        diagnostics
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!diagnostics.hasUsername || !diagnostics.hasPassword) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message: 'DATABASE_URL распознан, но в нём нет username и/или password. Ожидаемый формат: postgresql://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=require',
         hasDatabaseUrl: true,
         diagnostics
       },
